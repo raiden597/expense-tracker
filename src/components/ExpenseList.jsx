@@ -7,13 +7,25 @@ const categoryColors = {
   Bills: "bg-yellow-100 text-yellow-700",
   Shopping: "bg-purple-100 text-purple-700",
   General: "bg-gray-100 text-gray-700",
+  Nashe: "bg-pink-100 text-pink-700",
 };
 
-const ExpenseList = ({ expenses, onDelete }) => {
-  if (expenses.length === 0)
-    return <p className="text-center text-slate-500 mt-6">No expenses added yet.</p>;
+const currencySymbols = {
+  INR: "₹",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+};
 
-  // Group by category
+const ExpenseList = ({ expenses, onDelete, currency }) => {
+  if (expenses.length === 0)
+    return (
+      <p className="text-center text-slate-500 mt-6">
+        No expenses added yet.
+      </p>
+    );
+
   const grouped = expenses.reduce((acc, expense) => {
     const cat = expense.category || "General";
     if (!acc[cat]) acc[cat] = [];
@@ -21,7 +33,6 @@ const ExpenseList = ({ expenses, onDelete }) => {
     return acc;
   }, {});
 
-  // Sort categories by total amount
   const sortedCategories = Object.entries(grouped).sort((a, b) => {
     const totalA = a[1].reduce((sum, e) => sum + e.amount, 0);
     const totalB = b[1].reduce((sum, e) => sum + e.amount, 0);
@@ -37,24 +48,35 @@ const ExpenseList = ({ expenses, onDelete }) => {
     }));
   };
 
+  const symbol = currencySymbols[currency] || "₹";
+
   return (
     <div className="space-y-6">
       {sortedCategories.map(([category, items]) => {
         const total = items.reduce((sum, e) => sum + e.amount, 0);
         const isCollapsed = collapsed[category];
-        const badgeColor = categoryColors[category] || "bg-slate-100 text-slate-700";
+        const badgeColor =
+          categoryColors[category] || "bg-slate-100 text-slate-700";
 
         return (
-          <div key={category} className="border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+          <div
+            key={category}
+            className="border border-slate-200 rounded-lg shadow-sm overflow-hidden"
+          >
             <button
               onClick={() => toggleCategory(category)}
               className={`w-full flex justify-between items-center px-4 py-3 ${badgeColor}`}
             >
               <div>
                 <h3 className="text-lg font-semibold">{category}</h3>
-                <p className="text-sm">Total: ₹{total.toFixed(2)}</p>
+                <p className="text-sm">
+                  Total: {symbol}
+                  {total.toFixed(2)}
+                </p>
               </div>
-              <span className="text-xl font-bold">{isCollapsed ? "＋" : "－"}</span>
+              <span className="text-xl font-bold">
+                {isCollapsed ? "＋" : "－"}
+              </span>
             </button>
 
             <AnimatePresence>
@@ -76,9 +98,13 @@ const ExpenseList = ({ expenses, onDelete }) => {
                       transition={{ duration: 0.2 }}
                     >
                       <div>
-                        <p className="font-medium text-slate-800">{expense.title}</p>
+                        <p className="font-medium text-slate-800">
+                          {expense.title}
+                        </p>
                         <p className="text-sm text-slate-500">
-                          ₹{expense.amount.toFixed(2)} • {new Date(expense.date).toLocaleDateString()}
+                          {symbol}
+                          {expense.amount.toFixed(2)} •{" "}
+                          {new Date(expense.date).toLocaleDateString()}
                         </p>
                       </div>
                       <button

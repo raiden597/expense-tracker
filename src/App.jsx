@@ -1,8 +1,15 @@
-// App.js
 import { useState, useEffect } from "react";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
 import { Toaster, toast } from "react-hot-toast";
+
+const currencySymbols = {
+  INR: "₹",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+};
 
 const App = () => {
   const [expenses, setExpenses] = useState(() => {
@@ -12,6 +19,7 @@ const App = () => {
 
   const [month, setMonth] = useState("");
   const [sortBy, setSortBy] = useState("date");
+  const [currency, setCurrency] = useState("INR");
 
   useEffect(() => {
     localStorage.setItem("expenses", JSON.stringify(expenses));
@@ -62,7 +70,7 @@ const App = () => {
 
         <h1 className="text-3xl font-bold mb-1 text-center">Expense Tracker</h1>
         <h2 className="text-xl font-medium text-center mb-6 text-emerald-700">
-          Total: ₹{total.toFixed(2)}
+          Total: {currencySymbols[currency]}{total.toFixed(2)}
         </h2>
 
         <ExpenseForm onAdd={addExpense} />
@@ -90,6 +98,18 @@ const App = () => {
             <option value="amount">Highest Amount</option>
           </select>
 
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="w-full sm:w-auto border border-slate-300 p-2 rounded bg-white text-slate-700 shadow-sm"
+          >
+            {Object.entries(currencySymbols).map(([code, symbol]) => (
+              <option key={code} value={code}>
+                {symbol} {code}
+              </option>
+            ))}
+          </select>
+
           <button
             onClick={downloadCSV}
             className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded shadow"
@@ -98,7 +118,11 @@ const App = () => {
           </button>
         </div>
 
-        <ExpenseList expenses={sortedExpenses} onDelete={deleteExpense} />
+        <ExpenseList
+          expenses={sortedExpenses}
+          onDelete={deleteExpense}
+          currency={currency}
+        />
       </div>
     </div>
   );
