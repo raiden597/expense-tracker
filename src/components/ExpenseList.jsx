@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const categoryColors = {
@@ -26,18 +26,22 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
       </p>
     );
 
-  const grouped = expenses.reduce((acc, expense) => {
-    const cat = expense.category || "General";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(expense);
-    return acc;
-  }, {});
+  const grouped = useMemo(() => {
+    return expenses.reduce((acc, expense) => {
+      const cat = expense.category || "General";
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(expense);
+      return acc;
+    }, {});
+  }, [expenses]);
 
-  const sortedCategories = Object.entries(grouped).sort((a, b) => {
-    const totalA = a[1].reduce((sum, e) => sum + e.amount, 0);
-    const totalB = b[1].reduce((sum, e) => sum + e.amount, 0);
-    return totalB - totalA;
-  });
+  const sortedCategories = useMemo(() => {
+    return Object.entries(grouped).sort((a, b) => {
+      const totalA = a[1].reduce((sum, e) => sum + e.amount, 0);
+      const totalB = b[1].reduce((sum, e) => sum + e.amount, 0);
+      return totalB - totalA;
+    });
+  }, [grouped]);
 
   const [collapsed, setCollapsed] = useState({});
 
@@ -66,6 +70,8 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
             <button
               onClick={() => toggleCategory(category)}
               className={`w-full flex justify-between items-center px-4 py-3 ${badgeColor}`}
+              aria-expanded={!isCollapsed}
+              aria-controls={`section-${category}`}
             >
               <div>
                 <h3 className="text-lg font-semibold">{category}</h3>
@@ -75,13 +81,14 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                 </p>
               </div>
               <span className="text-xl font-bold">
-                {isCollapsed ? "＋" : "－"}
+                {isCollapsed ? "▶" : "▼"}
               </span>
             </button>
 
             <AnimatePresence>
               {!isCollapsed && (
                 <motion.ul
+                  id={`section-${category}`}
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
@@ -110,6 +117,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                       <button
                         onClick={() => onDelete(expense.id)}
                         className="text-red-500 hover:text-red-700 text-xl font-bold"
+                        aria-label={`Delete ${expense.title}`}
                       >
                         ×
                       </button>

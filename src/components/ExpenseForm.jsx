@@ -1,17 +1,26 @@
 import { useState } from "react";
 
+const categories = [
+  "General",
+  "Food",
+  "Travel",
+  "Bills",
+  "Shopping",
+  "Nashe",
+];
+
 const ExpenseForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("General");
+  const [category, setCategory] = useState(categories[0]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title || !amount) return;
+    if (!title.trim() || !amount || parseFloat(amount) <= 0) return;
 
     onAdd({
       id: Date.now(),
-      title,
+      title: title.trim(),
       amount: parseFloat(amount),
       category,
       date: new Date().toISOString(),
@@ -19,7 +28,7 @@ const ExpenseForm = ({ onAdd }) => {
 
     setTitle("");
     setAmount("");
-    setCategory("General");
+    setCategory(categories[0]);
   };
 
   return (
@@ -33,6 +42,7 @@ const ExpenseForm = ({ onAdd }) => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="w-full sm:flex-1 border border-slate-300 p-2 rounded bg-white text-slate-800 shadow-sm"
+        required
       />
 
       <input
@@ -41,6 +51,9 @@ const ExpenseForm = ({ onAdd }) => {
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         className="w-full sm:w-32 border border-slate-300 p-2 rounded bg-white text-slate-800 shadow-sm"
+        step="0.01"
+        min="0.01"
+        required
       />
 
       <select
@@ -48,12 +61,9 @@ const ExpenseForm = ({ onAdd }) => {
         onChange={(e) => setCategory(e.target.value)}
         className="w-full sm:w-auto border border-slate-300 p-2 rounded bg-white text-slate-800 shadow-sm"
       >
-        <option>General</option>
-        <option>Food</option>
-        <option>Travel</option>
-        <option>Bills</option>
-        <option>Shopping</option>
-        <option>Nashe</option>
+        {categories.map((cat) => (
+          <option key={cat}>{cat}</option>
+        ))}
       </select>
 
       <button
