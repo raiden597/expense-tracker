@@ -81,7 +81,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                 </p>
               </div>
               <span className="text-xl font-bold">
-                {isCollapsed ? "▶" : "▼"}
+                {isCollapsed ? "+" : "-"}
               </span>
             </button>
 

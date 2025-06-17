@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
+import CategoryPieChart from "./components/CategoryPieChart";
+import MonthlyBarChart from "./components/MonthlyBarChart";
 import { Toaster, toast } from "react-hot-toast";
 
 const currencySymbols = {
@@ -123,6 +125,27 @@ const App = () => {
           onDelete={deleteExpense}
           currency={currency}
         />
+
+        {/* 📊 Chart section */}
+        {filteredExpenses.length > 0 && (
+          <div className="mt-10 space-y-8">
+            <h2 className="text-2xl font-semibold text-center text-emerald-800">
+              Expense Insights
+            </h2>
+
+            <div className="bg-white p-4 rounded-xl shadow space-y-6">
+              <div>
+                <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Category</h3>
+                <CategoryPieChart expenses={filteredExpenses} />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Month</h3>
+                <MonthlyBarChart expenses={expenses} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
