@@ -57,7 +57,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-emerald-50 text-black px-4 py-6 sm:px-6">
-      <div className="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-4 sm:p-6">
+      <div className="w-full max-w-2xl mx-auto bg-white shadow-md rounded-2xl p-4 sm:p-6">
         <Toaster />
 
         <h1 className="text-3xl font-bold mb-1 text-center">Expense Tracker</h1>
