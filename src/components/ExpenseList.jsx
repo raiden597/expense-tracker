@@ -84,6 +84,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
 
         return (
           <div
+          layout
             key={category}
             className="border border-slate-200 rounded-lg shadow-sm overflow-hidden"
           >
@@ -116,14 +117,16 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
               {!isCollapsed && (
                 <motion.ul
                   id={`section-${category}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
                   className="p-4 pt-2 space-y-2"
                 >
                   {items.map((expense) => (
                     <motion.li
+                    layout
                       key={expense.id}
                       className="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-md shadow-sm"
                       initial={{ opacity: 0, y: 5 }}
