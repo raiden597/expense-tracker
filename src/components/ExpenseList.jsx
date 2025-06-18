@@ -1,5 +1,13 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaUtensils,
+  FaPlane,
+  FaBolt,
+  FaShoppingBag,
+  FaCircle,
+  FaWineGlassAlt,
+} from "react-icons/fa";
 
 const categoryColors = {
   Food: "bg-red-100 text-red-700",
@@ -8,6 +16,15 @@ const categoryColors = {
   Shopping: "bg-purple-100 text-purple-700",
   General: "bg-gray-100 text-gray-700",
   Nashe: "bg-pink-100 text-pink-700",
+};
+
+const categoryIcons = {
+  Food: <FaUtensils className="mr-2" />,
+  Travel: <FaPlane className="mr-2" />,
+  Bills: <FaBolt className="mr-2" />,
+  Shopping: <FaShoppingBag className="mr-2" />,
+  General: <FaCircle className="mr-2" />,
+  Nashe: <FaWineGlassAlt className="mr-2" />,
 };
 
 const currencySymbols = {
@@ -61,6 +78,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
         const isCollapsed = collapsed[category];
         const badgeColor =
           categoryColors[category] || "bg-slate-100 text-slate-700";
+        const icon = categoryIcons[category] || <FaCircle className="mr-2" />;
 
         return (
           <div
@@ -73,12 +91,15 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
               aria-expanded={!isCollapsed}
               aria-controls={`section-${category}`}
             >
-              <div>
-                <h3 className="text-lg font-semibold">{category}</h3>
-                <p className="text-sm">
-                  Total: {symbol}
-                  {total.toFixed(2)}
-                </p>
+              <div className="flex items-center gap-2">
+                {icon}
+                <div>
+                  <h3 className="text-lg font-semibold">{category}</h3>
+                  <p className="text-sm">
+                    Total: {symbol}
+                    {total.toFixed(2)}
+                  </p>
+                </div>
               </div>
               <span className="text-xl font-bold">
                 {isCollapsed ? "+" : "-"}
