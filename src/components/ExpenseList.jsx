@@ -62,7 +62,15 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
     });
   }, [grouped]);
 
-  const [collapsed, setCollapsed] = useState({});
+  const [collapsed, setCollapsed] = useState(() => {
+  const initial = {};
+  expenses.forEach((expense) => {
+    const cat = expense.category || "General";
+    initial[cat] = true; // true = collapsed
+  });
+  return initial;
+});
+
 
   const toggleCategory = (category) => {
     setCollapsed((prev) => ({
