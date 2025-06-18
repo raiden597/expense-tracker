@@ -7,6 +7,8 @@ import {
   FaShoppingBag,
   FaCircle,
   FaWineGlassAlt,
+  FaChevronDown,
+  FaTrashAlt,
 } from "react-icons/fa";
 
 const categoryColors = {
@@ -101,9 +103,13 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                   </p>
                 </div>
               </div>
-              <span className="text-xl font-bold">
-                {isCollapsed ? "+" : "-"}
-              </span>
+       <span
+  className={`text-slate-700 text-lg transition-transform duration-300 origin-center ${
+    isCollapsed ? "rotate-0" : "rotate-180"
+  }`}
+>
+  <FaChevronDown />
+</span>
             </button>
 
             <AnimatePresence>
@@ -136,12 +142,12 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                         </p>
                       </div>
                       <button
-                        onClick={() => onDelete(expense.id)}
-                        className="text-red-500 hover:text-red-700 text-xl font-bold"
-                        aria-label={`Delete ${expense.title}`}
-                      >
-                        ×
-                      </button>
+  onClick={() => onDelete(expense.id)}
+  className="text-red-400 hover:text-red-500 text-lg"
+  aria-label={`Delete ${expense.title}`}
+>
+  <FaTrashAlt />
+</button>
                     </motion.li>
                   ))}
                 </motion.ul>
