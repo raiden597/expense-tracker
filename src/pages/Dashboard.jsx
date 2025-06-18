@@ -2,6 +2,7 @@ import { useState } from "react";
 import ExpenseList from "../components/ExpenseList";
 import CategoryPieChart from "../components/CategoryPieChart";
 import MonthlyBarChart from "../components/MonthlyBarChart";
+import { useCurrency } from "../CurrencyContext";
 
 const currencySymbols = {
   INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥",
@@ -10,7 +11,7 @@ const currencySymbols = {
 const Dashboard = ({ expenses, onDelete }) => {
   const [month, setMonth] = useState("");
   const [sortBy, setSortBy] = useState("date");
-  const [currency, setCurrency] = useState("INR");
+  const { currency, setCurrency } = useCurrency();
 
   const filteredExpenses = month
     ? expenses.filter((e) => new Date(e.date).getMonth() + 1 === parseInt(month))

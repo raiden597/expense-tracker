@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useCurrency } from "../CurrencyContext";
 
 const categories = [
   "General",
@@ -9,10 +10,21 @@ const categories = [
   "Nashe",
 ];
 
+const currencySymbols = {
+  INR: "₹",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+};
+
 const ExpenseForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState(categories[0]);
+
+  const { currency } = useCurrency();
+  const symbol = currencySymbols[currency] || "₹";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,16 +57,21 @@ const ExpenseForm = ({ onAdd }) => {
         required
       />
 
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full sm:w-32 border border-slate-300 p-2 rounded bg-white text-slate-800 shadow-sm"
-        step="0.01"
-        min="0.01"
-        required
-      />
+      <div className="relative w-full sm:w-32">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+          {symbol}
+        </span>
+        <input
+          type="number"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="pl-7 w-full border border-slate-300 p-2 rounded bg-white text-slate-800 shadow-sm"
+          step="0.01"
+          min="0.01"
+          required
+        />
+      </div>
 
       <select
         value={category}

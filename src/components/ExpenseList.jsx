@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCurrency } from "../CurrencyContext";
 import {
   FaUtensils,
   FaPlane,
@@ -29,15 +30,9 @@ const categoryIcons = {
   Nashe: <FaWineGlassAlt className="mr-2" />,
 };
 
-const currencySymbols = {
-  INR: "₹",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-  JPY: "¥",
-};
+const ExpenseList = ({ expenses, onDelete }) => {
+  const { symbol } = useCurrency(); // Now getting symbol from context
 
-const ExpenseList = ({ expenses, onDelete, currency }) => {
   if (expenses.length === 0)
     return (
       <p className="text-center text-slate-500 mt-6">
@@ -63,14 +58,13 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
   }, [grouped]);
 
   const [collapsed, setCollapsed] = useState(() => {
-  const initial = {};
-  expenses.forEach((expense) => {
-    const cat = expense.category || "General";
-    initial[cat] = true; // true = collapsed
+    const initial = {};
+    expenses.forEach((expense) => {
+      const cat = expense.category || "General";
+      initial[cat] = true;
+    });
+    return initial;
   });
-  return initial;
-});
-
 
   const toggleCategory = (category) => {
     setCollapsed((prev) => ({
@@ -78,8 +72,6 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
       [category]: !prev[category],
     }));
   };
-
-  const symbol = currencySymbols[currency] || "₹";
 
   return (
     <div className="space-y-6">
@@ -92,7 +84,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
 
         return (
           <div
-          layout
+            layout
             key={category}
             className="border border-slate-200 rounded-lg shadow-sm overflow-hidden"
           >
@@ -112,13 +104,13 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                   </p>
                 </div>
               </div>
-       <span
-  className={`text-slate-700 text-lg transition-transform duration-300 origin-center ${
-    isCollapsed ? "rotate-0" : "rotate-180"
-  }`}
->
-  <FaChevronDown />
-</span>
+              <span
+                className={`text-slate-700 text-lg transition-transform duration-300 origin-center ${
+                  isCollapsed ? "rotate-0" : "rotate-180"
+                }`}
+              >
+                <FaChevronDown />
+              </span>
             </button>
 
             <AnimatePresence>
@@ -134,7 +126,7 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                 >
                   {items.map((expense) => (
                     <motion.li
-                    layout
+                      layout
                       key={expense.id}
                       className="flex justify-between items-center p-3 bg-white border border-slate-100 rounded-md shadow-sm"
                       initial={{ opacity: 0, y: 5 }}
@@ -153,12 +145,12 @@ const ExpenseList = ({ expenses, onDelete, currency }) => {
                         </p>
                       </div>
                       <button
-  onClick={() => onDelete(expense.id)}
-  className="text-red-400 hover:text-red-500 text-lg"
-  aria-label={`Delete ${expense.title}`}
->
-  <FaTrashAlt />
-</button>
+                        onClick={() => onDelete(expense.id)}
+                        className="text-red-400 hover:text-red-500 text-lg"
+                        aria-label={`Delete ${expense.title}`}
+                      >
+                        <FaTrashAlt />
+                      </button>
                     </motion.li>
                   ))}
                 </motion.ul>
