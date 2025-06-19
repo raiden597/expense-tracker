@@ -4,7 +4,8 @@ import ExpenseForm from "./components/ExpenseForm";
 import Dashboard from "./pages/Dashboard";
 import NavBar from "./components/NavBar";
 import { Toaster, toast } from "react-hot-toast";
-import { CurrencyProvider } from "./CurrencyContext"; // 👈 import context
+import { CurrencyProvider } from "./CurrencyContext";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const [expenses, setExpenses] = useState(() => {
@@ -39,6 +40,7 @@ const App = () => {
                 path="/dashboard"
                 element={<Dashboard expenses={expenses} onDelete={deleteExpense} />}
               />
+               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </div>

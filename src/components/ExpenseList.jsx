@@ -84,7 +84,6 @@ const ExpenseList = ({ expenses, onDelete }) => {
 
         return (
           <div
-            layout
             key={category}
             className="border border-slate-200 rounded-lg shadow-sm overflow-hidden"
           >

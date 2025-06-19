@@ -106,12 +106,12 @@ const Dashboard = ({ expenses, onDelete }) => {
           <div className="bg-white p-4 rounded-xl shadow space-y-6">
             <div>
               <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Category</h3>
-              <CategoryPieChart expenses={filteredExpenses} />
+              <CategoryPieChart expenses={filteredExpenses} symbol={currencySymbols[currency]} />
             </div>
 
             <div>
               <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Month</h3>
-              <MonthlyBarChart expenses={expenses} />
+              <MonthlyBarChart expenses={expenses} symbol={currencySymbols[currency]} />
             </div>
           </div>
         </div>
