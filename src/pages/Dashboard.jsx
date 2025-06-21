@@ -3,6 +3,7 @@ import ExpenseList from "../components/ExpenseList";
 import CategoryPieChart from "../components/CategoryPieChart";
 import MonthlyBarChart from "../components/MonthlyBarChart";
 import { useCurrency } from "../CurrencyContext";
+import DailyHeatmap from "../components/DailyHeatmap"; 
 
 const currencySymbols = {
   INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥",
@@ -113,6 +114,10 @@ const Dashboard = ({ expenses, onDelete }) => {
               <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Month</h3>
               <MonthlyBarChart expenses={expenses} symbol={currencySymbols[currency]} />
             </div>
+            <div>
+  <DailyHeatmap expenses={filteredExpenses} />
+</div>
+
           </div>
         </div>
       )}
