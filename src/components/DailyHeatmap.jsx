@@ -47,7 +47,7 @@ const DailyHeatmap = ({ expenses }) => {
   });
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full">
       <h3 className="text-lg font-medium text-slate-700 mb-2">
         Daily Expense Heatmap
       </h3>
@@ -74,27 +74,36 @@ const DailyHeatmap = ({ expenses }) => {
         </button>
       </div>
 
-      <CalendarHeatmap
-        startDate={startDate}
-        endDate={today}
-        values={heatmapData}
-        classForValue={(value) => {
-          if (!value || value.count === 0) return "color-empty";
-          if (value.count < 100) return "color-scale-1";
-          if (value.count < 1000) return "color-scale-2";
-          if (value.count < 5000) return "color-scale-3";
-          return "color-scale-4";
-        }}
-        tooltipDataAttrs={(value) =>
-          value.count
-            ? {
-                "data-tooltip-id": "heatmap-tooltip",
-                "data-tooltip-content": `${value.date} - ${symbol}${value.count.toFixed(2)}`,
-              }
-            : {}
-        }
-        showWeekdayLabels
-      />
+      <div
+        className={`${
+          view === "month" ? "flex justify-center" : "overflow-x-auto"
+        }`}
+      >
+        <div className={`${view === "month" ? "w-[420px]" : "w-full"}`}>
+          <CalendarHeatmap
+            startDate={startDate}
+            endDate={today}
+            values={heatmapData}
+            classForValue={(value) => {
+              if (!value || value.count === 0) return "color-empty";
+              if (value.count < 100) return "color-scale-1";
+              if (value.count < 1000) return "color-scale-2";
+              if (value.count < 5000) return "color-scale-3";
+              return "color-scale-4";
+            }}
+            tooltipDataAttrs={(value) =>
+              value.count
+                ? {
+                    "data-tooltip-id": "heatmap-tooltip",
+                    "data-tooltip-content": `${value.date} - ${symbol}${value.count.toFixed(2)}`,
+                  }
+                : {}
+            }
+            showWeekdayLabels
+          />
+        </div>
+      </div>
+
       <Tooltip id="heatmap-tooltip" />
 
       {/* Color Legend */}
@@ -106,10 +115,10 @@ const DailyHeatmap = ({ expenses }) => {
           <span className="w-4 h-4 bg-green-200 rounded" /> 1–99
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-400 rounded" /> 100-999
+          <span className="w-4 h-4 bg-green-400 rounded" /> 100–999
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-600 rounded" /> 1k-4.9k
+          <span className="w-4 h-4 bg-green-600 rounded" /> 1k–4.9k
         </div>
         <div className="flex items-center gap-1">
           <span className="w-4 h-4 bg-green-800 rounded" /> 5k+
