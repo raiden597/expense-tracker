@@ -7,7 +7,11 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = ["#EF4444", "#3B82F6", "#F59E0B", "#8B5CF6", "#6B7280", "#EC4899"];
+const COLORS = [
+  "#EF4444", "#3B82F6", "#F59E0B", "#8B5CF6", "#6B7280", "#EC4899",
+  "#10B981", "#F97316", "#0EA5E9", "#A855F7"
+];
+
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
@@ -16,16 +20,18 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text
-      x={x}
-      y={y}
-      fill="#374151"
-      textAnchor="middle"
-      dominantBaseline="central"
-      fontSize={12}
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
+    percent > 0.04 && (
+      <text
+        x={x}
+        y={y}
+        fill="#374151"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={12}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    )
   );
 };
 
@@ -41,9 +47,28 @@ const CategoryPieChart = ({ expenses, symbol = "₹" }) => {
     .sort((a, b) => b.value - a.value);
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const topCategory = data[0]?.name || null;
+
+  if (data.length === 0) {
+    return (
+      <div className="w-full h-80 flex items-center justify-center text-slate-500">
+        No expenses to display.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-80">
+      <div className="text-center mb-2">
+        <h3 className="text-slate-700 font-semibold">
+          Total Spent: {symbol}{total.toFixed(2)}
+        </h3>
+        {topCategory && (
+          <p className="text-sm text-emerald-700 mt-1">
+            Highest spending: <strong>{topCategory}</strong>
+          </p>
+        )}
+      </div>
       <ResponsiveContainer>
         <PieChart>
           <Pie

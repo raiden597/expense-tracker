@@ -8,10 +8,12 @@ import {
   CartesianGrid,
   LabelList,
   ReferenceLine,
+  Line,
+  Legend,
 } from "recharts";
 import { useState } from "react";
 
-const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
+const MonthlyBarChart = ({ expenses, currency = "INR", monthlyBudget = 10000 }) => {
   const [view, setView] = useState("total");
 
   const formatter = new Intl.NumberFormat("en-IN", {
@@ -20,7 +22,7 @@ const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
     maximumFractionDigits: 0,
   });
 
-  const data = Array.from({ length: 12 }, (_, i) => {
+  const rawData = Array.from({ length: 12 }, (_, i) => {
     const monthExpenses = expenses.filter(
       (e) => new Date(e.date).getMonth() === i
     );
@@ -33,11 +35,19 @@ const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
     };
   });
 
-  const filteredData = data.filter((d) => d.total > 0);
+  let cumulative = 0;
+  const data = rawData.map((d, i) => {
+    cumulative += d.total;
+    const prev = rawData[i - 1]?.total || 0;
+    const change = prev > 0 ? ((d.total - prev) / prev) * 100 : 0;
+    return { ...d, cumulative, change };
+  });
+
+  const filtered = data.filter((d) => d.total > 0);
   const average =
     view === "total"
-      ? filteredData.reduce((sum, d) => sum + d.total, 0) / filteredData.length || 0
-      : filteredData.reduce((sum, d) => sum + d.count, 0) / filteredData.length || 0;
+      ? filtered.reduce((sum, d) => sum + d.total, 0) / filtered.length || 0
+      : filtered.reduce((sum, d) => sum + d.count, 0) / filtered.length || 0;
 
   return (
     <div className="w-full h-auto">
@@ -63,8 +73,8 @@ const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
           Count
         </button>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={filteredData}>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart data={filtered}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" stroke="#6B7280" />
           <YAxis
@@ -74,12 +84,19 @@ const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
             }
           />
           <Tooltip
-            formatter={(value, name, props) => [
-              view === "total" ? formatter.format(value) : `${value} txns`,
-              view === "total" ? "Total" : "Transactions",
-            ]}
+            formatter={(value, name, props) => {
+              const entry = props.payload;
+              const formatted =
+                view === "total" ? formatter.format(value) : `${value} txns`;
+              const extra =
+                view === "total"
+                  ? `MoM: ${entry.change?.toFixed(1)}%`
+                  : "";
+              return [formatted, view === "total" ? `Total (${extra})` : "Transactions"];
+            }}
             wrapperStyle={{ fontSize: "14px" }}
           />
+          <Legend />
           <Bar
             dataKey={view}
             fill="#10B981"
@@ -95,11 +112,38 @@ const MonthlyBarChart = ({ expenses, currency = "INR" }) => {
               style={{ fill: "#374151", fontSize: 12 }}
             />
           </Bar>
+          {view === "total" && (
+            <>
+              <Line
+                type="monotone"
+                dataKey="cumulative"
+                stroke="#6366F1"
+                dot={{ r: 3 }}
+                strokeWidth={2}
+              />
+              <ReferenceLine
+                y={monthlyBudget}
+                stroke="#EF4444"
+                strokeDasharray="4 4"
+                label={{
+                  value: `Budget (${formatter.format(monthlyBudget)})`,
+                  position: "insideTopRight",
+                  fill: "#EF4444",
+                  fontSize: 12,
+                }}
+              />
+            </>
+          )}
           <ReferenceLine
             y={average}
             stroke="#F59E0B"
             strokeDasharray="4 4"
-            label={{ value: "Avg", position: "insideTopRight", fill: "#F59E0B" }}
+            label={{
+              value: "Avg",
+              position: "insideTopRight",
+              fill: "#F59E0B",
+              fontSize: 12,
+            }}
           />
         </BarChart>
       </ResponsiveContainer>
