@@ -82,7 +82,7 @@ const DailyHeatmap = ({ expenses }) => {
       <Tooltip id="heatmap-tooltip" />
 
       {/* Color Legend */}
-      <div className="flex gap-1 items-center justify-center text-sm mt-4 text-slate-500">
+      <div className="flex gap-2 items-center justify-center text-xs mt-4 text-slate-500">
         <div className="flex items-center gap-1">
           <span className="w-4 h-4 bg-gray-200 rounded" /> 0
         </div>
