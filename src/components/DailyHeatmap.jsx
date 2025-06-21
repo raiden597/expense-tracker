@@ -38,7 +38,7 @@ const DailyHeatmap = ({ expenses }) => {
   }).reverse();
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <h3 className="text-lg font-medium text-slate-700 mb-2">
         Daily Expense Heatmap
       </h3>
@@ -65,8 +65,8 @@ const DailyHeatmap = ({ expenses }) => {
         classForValue={(value) => {
           if (!value || value.count === 0) return "color-empty";
           if (value.count < 100) return "color-scale-1";
-          if (value.count < 500) return "color-scale-2";
-          if (value.count < 1000) return "color-scale-3";
+          if (value.count < 1000) return "color-scale-2";
+          if (value.count < 5000) return "color-scale-3";
           return "color-scale-4";
         }}
         tooltipDataAttrs={(value) =>
@@ -82,7 +82,7 @@ const DailyHeatmap = ({ expenses }) => {
       <Tooltip id="heatmap-tooltip" />
 
       {/* Color Legend */}
-      <div className="flex gap-1 items-center justify-center text-xs mt-4 text-slate-500">
+      <div className="flex gap-2 items-center justify-center text-xs mt-4 text-slate-500">
         <div className="flex items-center gap-1">
           <span className="w-4 h-4 bg-gray-200 rounded" /> 0
         </div>
@@ -90,13 +90,13 @@ const DailyHeatmap = ({ expenses }) => {
           <span className="w-4 h-4 bg-green-200 rounded" /> 1–99
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-400 rounded" /> 100–499
+          <span className="w-4 h-4 bg-green-400 rounded" /> 100-999
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-600 rounded" /> 500–999
+          <span className="w-4 h-4 bg-green-600 rounded" /> 1k-4.9k
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-4 h-4 bg-green-800 rounded" /> 1000+
+          <span className="w-4 h-4 bg-green-800 rounded" /> 5k+
         </div>
       </div>
     </div>
