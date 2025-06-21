@@ -12,8 +12,10 @@ import {
   Legend,
 } from "recharts";
 import { useState } from "react";
+import { useCurrency } from "../CurrencyContext"; // ⬅️ Import context
 
-const MonthlyBarChart = ({ expenses, currency = "INR", monthlyBudget = 10000 }) => {
+const MonthlyBarChart = ({ expenses, monthlyBudget = 10000 }) => {
+  const { currency, symbol } = useCurrency(); // ⬅️ Use currency and symbol from context
   const [view, setView] = useState("total");
 
   const formatter = new Intl.NumberFormat("en-IN", {
@@ -73,6 +75,7 @@ const MonthlyBarChart = ({ expenses, currency = "INR", monthlyBudget = 10000 }) 
           Count
         </button>
       </div>
+
       <ResponsiveContainer width="100%" height={350}>
         <BarChart data={filtered}>
           <CartesianGrid strokeDasharray="3 3" />

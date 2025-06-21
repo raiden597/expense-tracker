@@ -3,8 +3,10 @@ import "react-calendar-heatmap/dist/styles.css";
 import { Tooltip } from "react-tooltip";
 import { subDays, format } from "date-fns";
 import { useState } from "react";
+import { useCurrency } from "../CurrencyContext"; // ⬅️ import context
 
 const DailyHeatmap = ({ expenses }) => {
+  const { symbol } = useCurrency(); // ⬅️ use symbol from context
   const today = new Date();
   const startDate = subDays(today, 180);
 
@@ -73,7 +75,7 @@ const DailyHeatmap = ({ expenses }) => {
           value.count
             ? {
                 "data-tooltip-id": "heatmap-tooltip",
-                "data-tooltip-content": `${value.date} - ₹${value.count.toFixed(2)}`,
+                "data-tooltip-content": `${value.date} - ${symbol}${value.count.toFixed(2)}`, // ⬅️ dynamic currency
               }
             : {}
         }

@@ -6,6 +6,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useCurrency } from "../CurrencyContext"; // Use the symbol from context
 
 const COLORS = [
   "#EF4444", "#3B82F6", "#F59E0B", "#8B5CF6",
@@ -34,7 +35,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
   );
 };
 
-const CategoryPieChart = ({ expenses, symbol = "₹" }) => {
+const CategoryPieChart = ({ expenses }) => {
+  const { symbol } = useCurrency(); // Get selected currency symbol
+
   const categoryData = expenses.reduce((acc, e) => {
     const cat = e.category || "General";
     acc[cat] = acc[cat] || { value: 0, count: 0 };
@@ -86,7 +89,7 @@ const CategoryPieChart = ({ expenses, symbol = "₹" }) => {
           </Pie>
 
           <Tooltip
-            formatter={(value, name, props) => {
+            formatter={(value, name) => {
               const percent = ((value / total) * 100).toFixed(1);
               const count = data.find(d => d.name === name)?.count || 0;
               return [`${symbol}${value.toFixed(2)} (${percent}%) • ${count} txns`, name];

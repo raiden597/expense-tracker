@@ -18,7 +18,7 @@ const categoryColors = {
   Bills: "bg-yellow-100 text-yellow-700",
   Shopping: "bg-purple-100 text-purple-700",
   General: "bg-gray-100 text-gray-700",
-  Nashe: "bg-pink-100 text-pink-700",
+  Substances: "bg-pink-100 text-pink-700",
 };
 
 const categoryIcons = {
@@ -27,7 +27,7 @@ const categoryIcons = {
   Bills: <FaBolt className="mr-2" />,
   Shopping: <FaShoppingBag className="mr-2" />,
   General: <FaCircle className="mr-2" />,
-  Nashe: <FaWineGlassAlt className="mr-2" />,
+  Substances: <FaWineGlassAlt className="mr-2" />,
 };
 
 const ExpenseList = ({ expenses, onDelete }) => {

@@ -7,24 +7,15 @@ const categories = [
   "Travel",
   "Bills",
   "Shopping",
-  "Nashe",
+  "Substances",
 ];
-
-const currencySymbols = {
-  INR: "₹",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-  JPY: "¥",
-};
 
 const ExpenseForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState(categories[0]);
 
-  const { currency } = useCurrency();
-  const symbol = currencySymbols[currency] || "₹";
+  const { symbol } = useCurrency(); // Clean: Only use context's symbol
 
   const handleSubmit = (e) => {
     e.preventDefault();

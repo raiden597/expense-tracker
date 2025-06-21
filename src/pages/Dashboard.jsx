@@ -115,7 +115,7 @@ const Dashboard = ({ expenses, onDelete }) => {
               <MonthlyBarChart expenses={expenses} symbol={currencySymbols[currency]} />
             </div>
             <div>
-  <DailyHeatmap expenses={filteredExpenses} />
+  <DailyHeatmap expenses={filteredExpenses} symbol={currencySymbols[currency]} />
 </div>
 
           </div>
