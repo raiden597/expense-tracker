@@ -74,35 +74,36 @@ const DailyHeatmap = ({ expenses }) => {
         </button>
       </div>
 
-      <div
-        className={`${
-          view === "month" ? "flex justify-center" : "overflow-x-auto"
-        }`}
-      >
-        <div className={`${view === "month" ? "w-[420px]" : "w-full"}`}>
-          <CalendarHeatmap
-            startDate={startDate}
-            endDate={today}
-            values={heatmapData}
-            classForValue={(value) => {
-              if (!value || value.count === 0) return "color-empty";
-              if (value.count < 100) return "color-scale-1";
-              if (value.count < 1000) return "color-scale-2";
-              if (value.count < 5000) return "color-scale-3";
-              return "color-scale-4";
-            }}
-            tooltipDataAttrs={(value) =>
-              value.count
-                ? {
-                    "data-tooltip-id": "heatmap-tooltip",
-                    "data-tooltip-content": `${value.date} - ${symbol}${value.count.toFixed(2)}`,
-                  }
-                : {}
+      <div className="w-full overflow-x-auto">
+  <div
+    className={`${
+      view === "month" ? "min-w-[420px] mx-auto" : "min-w-[700px]"
+    }`}
+  >
+    <CalendarHeatmap
+      startDate={startDate}
+      endDate={today}
+      values={heatmapData}
+      classForValue={(value) => {
+        if (!value || value.count === 0) return "color-empty";
+        if (value.count < 100) return "color-scale-1";
+        if (value.count < 1000) return "color-scale-2";
+        if (value.count < 5000) return "color-scale-3";
+        return "color-scale-4";
+      }}
+      tooltipDataAttrs={(value) =>
+        value.count
+          ? {
+              "data-tooltip-id": "heatmap-tooltip",
+              "data-tooltip-content": `${value.date} - ${symbol}${value.count.toFixed(2)}`,
             }
-            showWeekdayLabels
-          />
-        </div>
-      </div>
+          : {}
+      }
+      showWeekdayLabels
+    />
+  </div>
+</div>
+
 
       <Tooltip id="heatmap-tooltip" />
 
