@@ -6,17 +6,50 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
   LabelList,
   ReferenceLine,
-  Line,
-  Legend,
 } from "recharts";
 import { useState } from "react";
-import { useCurrency } from "../CurrencyContext"; // ⬅️ Import context
+import { useCurrency } from "../CurrencyContext";
 
-const MonthlyBarChart = ({ expenses, monthlyBudget = 10000 }) => {
-  const { currency, symbol } = useCurrency(); // ⬅️ Use currency and symbol from context
-  const [view, setView] = useState("total");
+const categoryColors = {
+  Food: "#f87171",
+  Travel: "#60a5fa",
+  Bills: "#facc15",
+  Shopping: "#c084fc",
+  General: "#9ca3af",
+  Substances: "#f472b6",
+};
+
+const defaultColors = [
+  "#34d399",
+  "#f87171",
+  "#60a5fa",
+  "#facc15",
+  "#c084fc",
+  "#f472b6",
+  "#9ca3af",
+];
+
+const CustomLegend = ({ payload }) => (
+  <ul className="flex flex-wrap gap-4 text-sm mt-2 justify-center">
+    {payload.map((entry, index) => (
+      <li key={`item-${index}`} className="flex items-center gap-2">
+        <span
+          className="inline-block w-3 h-3 rounded-full"
+          style={{ backgroundColor: entry.color }}
+        />
+        {entry.value}
+      </li>
+    ))}
+  </ul>
+);
+
+const MonthlyBarChart = ({ expenses }) => {
+  const { currency, symbol } = useCurrency();
+  const [view, setView] = useState("stacked");
+  const [highlight, setHighlight] = useState("All");
 
   const formatter = new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -24,130 +57,165 @@ const MonthlyBarChart = ({ expenses, monthlyBudget = 10000 }) => {
     maximumFractionDigits: 0,
   });
 
-  const rawData = Array.from({ length: 12 }, (_, i) => {
+  const categories = Array.from(
+    new Set(expenses.map((e) => e.category || "General"))
+  );
+
+  const groupedData = Array.from({ length: 12 }, (_, i) => {
     const monthExpenses = expenses.filter(
       (e) => new Date(e.date).getMonth() === i
     );
-    const total = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const count = monthExpenses.length;
+    const categorySums = {};
+    let total = 0;
+    categories.forEach((cat) => {
+      const sum = monthExpenses
+        .filter((e) => (e.category || "General") === cat)
+        .reduce((s, e) => s + e.amount, 0);
+      categorySums[cat] = sum;
+      total += sum;
+    });
     return {
       name: new Date(0, i).toLocaleString("default", { month: "short" }),
       total,
-      count,
+      ...categorySums,
     };
   });
 
-  let cumulative = 0;
-  const data = rawData.map((d, i) => {
-    cumulative += d.total;
-    const prev = rawData[i - 1]?.total || 0;
-    const change = prev > 0 ? ((d.total - prev) / prev) * 100 : 0;
-    return { ...d, cumulative, change };
-  });
+  const nonZeroMonths = groupedData.filter((d) => d.total > 0);
+  const avg =
+    nonZeroMonths.reduce((sum, d) => sum + d.total, 0) /
+      nonZeroMonths.length || 0;
 
-  const filtered = data.filter((d) => d.total > 0);
-  const average =
-    view === "total"
-      ? filtered.reduce((sum, d) => sum + d.total, 0) / filtered.length || 0
-      : filtered.reduce((sum, d) => sum + d.count, 0) / filtered.length || 0;
+  // Per-category average when a category is highlighted
+  const catAvg =
+    highlight !== "All"
+      ? nonZeroMonths.reduce((sum, d) => sum + (d[highlight] || 0), 0) /
+        nonZeroMonths.length
+      : null;
 
   return (
     <div className="w-full h-auto">
-      <div className="flex justify-end mb-2 gap-2 text-sm">
-        <button
-          onClick={() => setView("total")}
-          className={`px-3 py-1 rounded-full border ${
-            view === "total"
-              ? "bg-emerald-500 text-white"
-              : "bg-white text-emerald-700 border-emerald-300"
-          }`}
-        >
-          Amount
-        </button>
-        <button
-          onClick={() => setView("count")}
-          className={`px-3 py-1 rounded-full border ${
-            view === "count"
-              ? "bg-emerald-500 text-white"
-              : "bg-white text-emerald-700 border-emerald-300"
-          }`}
-        >
-          Count
-        </button>
+      {/* Controls */}
+      <div className="flex flex-wrap justify-between items-center mb-2 gap-2 text-sm">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setView(view === "stacked" ? "simple" : "stacked")}
+            className="px-3 py-1 rounded-full border bg-white text-emerald-700 border-emerald-300"
+          >
+            View: {view === "stacked" ? "Category" : "Simple"}
+          </button>
+
+          <select
+            value={highlight}
+            onChange={(e) => setHighlight(e.target.value)}
+            className="border border-slate-300 rounded px-2 py-1 text-sm"
+          >
+            <option value="All">Highlight: All</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
+      {/* Chart */}
       <ResponsiveContainer width="100%" height={350}>
-        <BarChart data={filtered}>
+        <BarChart data={groupedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" stroke="#6B7280" />
-          <YAxis
-            stroke="#6B7280"
-            tickFormatter={(value) =>
-              view === "total" ? formatter.format(value) : value
-            }
-          />
+          <YAxis stroke="#6B7280" tickFormatter={(v) => formatter.format(v)} />
           <Tooltip
-            formatter={(value, name, props) => {
-              const entry = props.payload;
-              const formatted =
-                view === "total" ? formatter.format(value) : `${value} txns`;
-              const extra =
-                view === "total"
-                  ? `MoM: ${entry.change?.toFixed(1)}%`
-                  : "";
-              return [formatted, view === "total" ? `Total (${extra})` : "Transactions"];
+            content={({ payload, label }) => {
+              if (!payload || !payload.length) return null;
+              return (
+                <div className="bg-white shadow-md border p-3 rounded text-sm space-y-1">
+                  <div className="font-semibold text-slate-700">
+                    Month: {label}
+                  </div>
+                  {payload.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span
+                        className="inline-block w-3 h-3 rounded-full"
+                        style={{ backgroundColor: entry.color }}
+                      />
+                      <span>{entry.name}:</span>
+                      <span className="ml-auto font-medium">
+                        {symbol}
+                        {entry.value.toFixed(0)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
             }}
-            wrapperStyle={{ fontSize: "14px" }}
           />
-          <Legend />
-          <Bar
-            dataKey={view}
-            fill="#10B981"
-            radius={[6, 6, 0, 0]}
-            isAnimationActive={true}
-          >
-            <LabelList
-              dataKey={view}
-              position="top"
-              formatter={(value) =>
-                view === "total" ? formatter.format(value) : value
-              }
-              style={{ fill: "#374151", fontSize: 12 }}
+          {view === "stacked" && <Legend content={<CustomLegend />} />}
+
+          {/* Bars */}
+          {view === "stacked"
+            ? categories.map((cat, index) => {
+                const color =
+                  categoryColors[cat] ||
+                  defaultColors[index % defaultColors.length];
+                const isDim = highlight !== "All" && highlight !== cat;
+
+                return (
+                  <Bar
+                    key={cat}
+                    dataKey={cat}
+                    stackId="a"
+                    fill={color}
+                    fillOpacity={isDim ? 0.3 : 1}
+                  >
+                  </Bar>
+                );
+              })
+            : (
+              <Bar
+                dataKey="total"
+                fill="#10B981"
+                fillOpacity={highlight !== "All" ? 0.3 : 1}
+              >
+                <LabelList
+                  dataKey="total"
+                  position="top"
+                  formatter={(v) => `${symbol}${v.toFixed(0)}`}
+                  style={{ fontSize: 12, fill: "#374151" }}
+                />
+              </Bar>
+            )}
+
+          {/* Overall Avg Line (simple view only) */}
+          {view === "simple" && (
+            <ReferenceLine
+              y={avg}
+              stroke="#F59E0B"
+              strokeDasharray="4 4"
+              label={{
+                value: `Avg (${formatter.format(avg)})`,
+                position: "insideTopRight",
+                fill: "#F59E0B",
+                fontSize: 12,
+              }}
             />
-          </Bar>
-          {view === "total" && (
-            <>
-              <Line
-                type="monotone"
-                dataKey="cumulative"
-                stroke="#6366F1"
-                dot={{ r: 3 }}
-                strokeWidth={2}
-              />
-              <ReferenceLine
-                y={monthlyBudget}
-                stroke="#EF4444"
-                strokeDasharray="4 4"
-                label={{
-                  value: `Budget (${formatter.format(monthlyBudget)})`,
-                  position: "insideTopRight",
-                  fill: "#EF4444",
-                  fontSize: 12,
-                }}
-              />
-            </>
           )}
-          <ReferenceLine
-            y={average}
-            stroke="#F59E0B"
-            strokeDasharray="4 4"
-            label={{
-              value: "Avg",
-              position: "insideTopRight",
-              fill: "#F59E0B",
-              fontSize: 12,
-            }}
-          />
+
+          {/* Per-category Avg Line (stacked view only) */}
+          {view === "stacked" && highlight !== "All" && catAvg > 0 && (
+            <ReferenceLine
+              y={catAvg}
+              stroke={categoryColors[highlight] || "#3B82F6"}
+              strokeDasharray="4 2"
+              label={{
+                value: `Avg (${highlight}): ${formatter.format(catAvg)}`,
+                position: "insideTopRight",
+                fill: categoryColors[highlight] || "#3B82F6",
+                fontSize: 12,
+              }}
+            />
+          )}
         </BarChart>
       </ResponsiveContainer>
     </div>
