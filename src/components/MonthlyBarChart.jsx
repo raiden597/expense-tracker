@@ -6,7 +6,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Legend,
   LabelList,
   ReferenceLine,
 } from "recharts";
@@ -23,28 +22,9 @@ const categoryColors = {
 };
 
 const defaultColors = [
-  "#34d399",
-  "#f87171",
-  "#60a5fa",
-  "#facc15",
-  "#c084fc",
-  "#f472b6",
-  "#9ca3af",
+  "#34d399", "#f87171", "#60a5fa",
+  "#facc15", "#c084fc", "#f472b6", "#9ca3af"
 ];
-
-const CustomLegend = ({ payload }) => (
-  <ul className="flex flex-wrap gap-4 text-sm mt-2 justify-center">
-    {payload.map((entry, index) => (
-      <li key={`item-${index}`} className="flex items-center gap-2">
-        <span
-          className="inline-block w-3 h-3 rounded-full"
-          style={{ backgroundColor: entry.color }}
-        />
-        {entry.value}
-      </li>
-    ))}
-  </ul>
-);
 
 const MonthlyBarChart = ({ expenses }) => {
   const { currency, symbol } = useCurrency();
@@ -67,13 +47,16 @@ const MonthlyBarChart = ({ expenses }) => {
     );
     const categorySums = {};
     let total = 0;
+
     categories.forEach((cat) => {
       const sum = monthExpenses
         .filter((e) => (e.category || "General") === cat)
         .reduce((s, e) => s + e.amount, 0);
+
       categorySums[cat] = sum;
       total += sum;
     });
+
     return {
       name: new Date(0, i).toLocaleString("default", { month: "short" }),
       total,
@@ -83,14 +66,11 @@ const MonthlyBarChart = ({ expenses }) => {
 
   const nonZeroMonths = groupedData.filter((d) => d.total > 0);
   const avg =
-    nonZeroMonths.reduce((sum, d) => sum + d.total, 0) /
-      nonZeroMonths.length || 0;
+    nonZeroMonths.reduce((sum, d) => sum + d.total, 0) / nonZeroMonths.length || 0;
 
-  // Per-category average when a category is highlighted
   const catAvg =
     highlight !== "All"
-      ? nonZeroMonths.reduce((sum, d) => sum + (d[highlight] || 0), 0) /
-        nonZeroMonths.length
+      ? nonZeroMonths.reduce((sum, d) => sum + (d[highlight] || 0), 0) / nonZeroMonths.length
       : null;
 
   return (
@@ -151,14 +131,12 @@ const MonthlyBarChart = ({ expenses }) => {
               );
             }}
           />
-          {view === "stacked" && <Legend content={<CustomLegend />} />}
 
           {/* Bars */}
           {view === "stacked"
             ? categories.map((cat, index) => {
                 const color =
-                  categoryColors[cat] ||
-                  defaultColors[index % defaultColors.length];
+                  categoryColors[cat] || defaultColors[index % defaultColors.length];
                 const isDim = highlight !== "All" && highlight !== cat;
 
                 return (
@@ -168,8 +146,7 @@ const MonthlyBarChart = ({ expenses }) => {
                     stackId="a"
                     fill={color}
                     fillOpacity={isDim ? 0.3 : 1}
-                  >
-                  </Bar>
+                  />
                 );
               })
             : (
@@ -187,7 +164,7 @@ const MonthlyBarChart = ({ expenses }) => {
               </Bar>
             )}
 
-          {/* Overall Avg Line (simple view only) */}
+          {/* Avg Lines */}
           {view === "simple" && (
             <ReferenceLine
               y={avg}
@@ -201,8 +178,6 @@ const MonthlyBarChart = ({ expenses }) => {
               }}
             />
           )}
-
-          {/* Per-category Avg Line (stacked view only) */}
           {view === "stacked" && highlight !== "All" && catAvg > 0 && (
             <ReferenceLine
               y={catAvg}
