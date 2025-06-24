@@ -7,12 +7,10 @@ import {
   Legend,
 } from "recharts";
 import { useCurrency } from "../CurrencyContext"; // Use the symbol from context
+import { categoryColors, defaultColors } from "../assets/categoryColors";
 
-const COLORS = [
-  "#EF4444", "#3B82F6", "#F59E0B", "#8B5CF6",
-  "#6B7280", "#EC4899", "#10B981", "#F97316",
-  "#0EA5E9", "#A855F7"
-];
+
+
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
@@ -83,9 +81,11 @@ const CategoryPieChart = ({ expenses }) => {
             labelLine={false}
             label={renderCustomizedLabel}
           >
-            {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
+            {data.map((entry, index) => {
+  const color =
+    categoryColors[entry.name] || defaultColors[index % defaultColors.length];
+  return <Cell key={`cell-${index}`} fill={color} />;
+})}
           </Pie>
 
           <Tooltip
