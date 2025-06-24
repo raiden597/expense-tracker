@@ -6,12 +6,15 @@ import NavBar from "./components/NavBar";
 import { Toaster, toast } from "react-hot-toast";
 import { CurrencyProvider } from "./CurrencyContext";
 import NotFound from "./pages/NotFound";
+import EditExpenseModal from "./components/EditExpenseModal"; // 👈 Make sure this exists
 
 const App = () => {
   const [expenses, setExpenses] = useState(() => {
     const saved = localStorage.getItem("expenses");
     return saved ? JSON.parse(saved) : [];
   });
+
+  const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
     localStorage.setItem("expenses", JSON.stringify(expenses));
@@ -27,6 +30,14 @@ const App = () => {
     toast("Deleted", { icon: "🗑️" });
   };
 
+  const saveEditedExpense = (updatedExpense) => {
+    setExpenses((prev) =>
+      prev.map((e) => (e.id === updatedExpense.id ? updatedExpense : e))
+    );
+    toast.success("Expense updated!");
+    setEditingExpense(null); // close modal
+  };
+
   return (
     <CurrencyProvider>
       <Router>
@@ -38,12 +49,27 @@ const App = () => {
               <Route path="/" element={<ExpenseForm onAdd={addExpense} />} />
               <Route
                 path="/dashboard"
-                element={<Dashboard expenses={expenses} onDelete={deleteExpense} />}
+                element={
+                  <Dashboard
+                    expenses={expenses}
+                    onDelete={deleteExpense}
+                    onEdit={setEditingExpense}
+                  />
+                }
               />
-               <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </div>
+
+        {/* Edit modal */}
+        {editingExpense && (
+          <EditExpenseModal
+            expense={editingExpense}
+            onClose={() => setEditingExpense(null)}
+            onSave={saveEditedExpense}
+          />
+        )}
       </Router>
     </CurrencyProvider>
   );

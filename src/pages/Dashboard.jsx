@@ -9,7 +9,7 @@ const currencySymbols = {
   INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥",
 };
 
-const Dashboard = ({ expenses, onDelete }) => {
+const Dashboard = ({ expenses, onDelete, onEdit }) => {
   const [month, setMonth] = useState("");
   const [sortBy, setSortBy] = useState("date");
   const { currency, setCurrency } = useCurrency();
@@ -96,6 +96,7 @@ const Dashboard = ({ expenses, onDelete }) => {
         expenses={sortedExpenses}
         onDelete={onDelete}
         currency={currency}
+        onEdit={onEdit}
       />
 
       {filteredExpenses.length > 0 && (

@@ -10,6 +10,7 @@ import {
   FaWineGlassAlt,
   FaChevronDown,
   FaTrashAlt,
+  FaEdit,
 } from "react-icons/fa";
 
 const categoryColors = {
@@ -30,8 +31,8 @@ const categoryIcons = {
   Substances: <FaWineGlassAlt className="mr-2" />,
 };
 
-const ExpenseList = ({ expenses, onDelete }) => {
-  const { symbol } = useCurrency(); // Now getting symbol from context
+const ExpenseList = ({ expenses, onDelete, onEdit }) => {
+  const { symbol } = useCurrency();
 
   if (expenses.length === 0)
     return (
@@ -143,13 +144,22 @@ const ExpenseList = ({ expenses, onDelete }) => {
                           {new Date(expense.date).toLocaleDateString()}
                         </p>
                       </div>
-                      <button
-                        onClick={() => onDelete(expense.id)}
-                        className="text-red-400 hover:text-red-500 text-lg"
-                        aria-label={`Delete ${expense.title}`}
-                      >
-                        <FaTrashAlt />
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => onEdit(expense)}
+                          className="text-blue-500 hover:text-blue-600 text-lg"
+                          aria-label={`Edit ${expense.title}`}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => onDelete(expense.id)}
+                          className="text-red-400 hover:text-red-500 text-lg"
+                          aria-label={`Delete ${expense.title}`}
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </div>
                     </motion.li>
                   ))}
                 </motion.ul>
