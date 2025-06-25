@@ -82,8 +82,7 @@ const CategoryPieChart = ({ expenses }) => {
             label={renderCustomizedLabel}
           >
             {data.map((entry, index) => {
-  const color =
-    categoryColors[entry.name] || defaultColors[index % defaultColors.length];
+  const color = categoryColors[entry.name] || defaultColors[index % defaultColors.length];
   return <Cell key={`cell-${index}`} fill={color} />;
 })}
           </Pie>

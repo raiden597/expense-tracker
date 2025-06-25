@@ -4,6 +4,7 @@ import CategoryPieChart from "../components/CategoryPieChart";
 import MonthlyBarChart from "../components/MonthlyBarChart";
 import { useCurrency } from "../CurrencyContext";
 import DailyHeatmap from "../components/DailyHeatmap"; 
+import StatsSummary from "../components/StatsSummary";
 
 const currencySymbols = {
   INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥",
@@ -45,9 +46,7 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-1 text-center">Dashboard</h1>
-      <h2 className="text-xl font-medium text-center mb-6 text-emerald-700">
-        Total: {currencySymbols[currency]}{total.toFixed(2)}
-      </h2>
+      
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-4 justify-center">
         <select
@@ -91,6 +90,8 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
           Export CSV
         </button>
       </div>
+       
+      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} /> 
 
       <ExpenseList
         expenses={sortedExpenses}

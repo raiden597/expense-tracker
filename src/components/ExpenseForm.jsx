@@ -15,7 +15,7 @@ const ExpenseForm = ({ onAdd }) => {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState(categories[0]);
 
-  const { symbol } = useCurrency(); // Clean: Only use context's symbol
+  const { symbol } = useCurrency();
 
   const handleSubmit = (e) => {
     e.preventDefault();

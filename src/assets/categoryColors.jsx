@@ -5,6 +5,7 @@ export const categoryColors = {
   Shopping: "#c084fc",
   General: "#9ca3af",
   Substances: "#f472b6",
+   Others: "#d1d5db"
 };
 
 export const defaultColors = [

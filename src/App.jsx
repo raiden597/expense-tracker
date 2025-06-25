@@ -6,7 +6,7 @@ import NavBar from "./components/NavBar";
 import { Toaster, toast } from "react-hot-toast";
 import { CurrencyProvider } from "./CurrencyContext";
 import NotFound from "./pages/NotFound";
-import EditExpenseModal from "./components/EditExpenseModal"; // 👈 Make sure this exists
+import EditExpenseModal from "./components/EditExpenseModal";
 
 const App = () => {
   const [expenses, setExpenses] = useState(() => {
