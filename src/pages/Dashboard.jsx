@@ -47,6 +47,7 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
     <div>
       <h1 className="text-3xl font-bold mb-1 text-center">Dashboard</h1>
       
+      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-4 justify-center">
         <select
@@ -91,7 +92,7 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
         </button>
       </div>
        
-      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} /> 
+       
 
       <ExpenseList
         expenses={sortedExpenses}
