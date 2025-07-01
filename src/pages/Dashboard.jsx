@@ -48,7 +48,7 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
     <div>
       <h1 className="text-3xl font-bold mb-1 text-center">Dashboard</h1>
       
-      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} allExpenses={expenses}/>
+      <StatsSummary expenses={filteredExpenses} allExpenses={expenses}/>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-4 justify-center">
         <select
@@ -111,15 +111,15 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
           <div className="bg-white p-4 rounded-xl shadow space-y-6">
             <div>
               <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Category</h3>
-              <CategoryPieChart expenses={filteredExpenses} symbol={currencySymbols[currency]} />
+              <CategoryPieChart expenses={filteredExpenses} />
             </div>
 
             <div>
               <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Month</h3>
-              <MonthlyBarChart expenses={expenses} symbol={currencySymbols[currency]} />
+              <MonthlyBarChart expenses={expenses} />
             </div>
             <div>
-  <DailyHeatmap expenses={filteredExpenses} symbol={currencySymbols[currency]} />
+  <DailyHeatmap expenses={filteredExpenses} />
 </div>
 
           </div>
