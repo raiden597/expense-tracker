@@ -11,7 +11,8 @@ const currencySymbols = {
 };
 
 const Dashboard = ({ expenses, onDelete, onEdit }) => {
-  const [month, setMonth] = useState("");
+  const currentMonth = new Date().getMonth() + 1; // 1-indexed (Jan = 1)
+  const [month, setMonth] = useState(currentMonth.toString());
   const [sortBy, setSortBy] = useState("date");
   const { currency, setCurrency } = useCurrency();
 
@@ -47,7 +48,7 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
     <div>
       <h1 className="text-3xl font-bold mb-1 text-center">Dashboard</h1>
       
-      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} />
+      <StatsSummary expenses={filteredExpenses} symbol={currencySymbols[currency]} allExpenses={expenses}/>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-4 justify-center">
         <select
