@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { CATEGORIES } from "../constants";
 
 const EditExpenseModal = ({ expense, onClose, onSave }) => {
   const [formData, setFormData] = useState(expense);
@@ -11,7 +13,12 @@ const EditExpenseModal = ({ expense, onClose, onSave }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "amount" ? parseFloat(value) : value,
+      [name]:
+        name === "amount"
+          ? parseFloat(value)
+          : name === "date"
+          ? new Date(value).toISOString()
+          : value,
     }));
   };
 
@@ -42,30 +49,30 @@ const EditExpenseModal = ({ expense, onClose, onSave }) => {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2"
             placeholder="Amount"
+            step="0.01"
+            min="0.01"
             required
           />
           <input
             name="date"
             type="date"
-            value={formData.date.slice(0, 10)}
+            value={format(new Date(formData.date), "yyyy-MM-dd")}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded px-3 py-2"
             required
           />
           <select
-  name="category"
-  value={formData.category}
-  onChange={handleChange}
-  className="w-full border border-gray-300 rounded px-3 py-2"
->
-  <option value="Food">Food</option>
-  <option value="Travel">Travel</option>
-  <option value="Bills">Bills</option>
-  <option value="Shopping">Shopping</option>
-  <option value="Substances">Substances</option>
-  <option value="General">General</option>
-</select>
-
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
 
           <div className="flex justify-end gap-2">
             <button

@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { useCurrency } from "../CurrencyContext";
+import { CATEGORIES } from "../constants";
 
-const categories = [
-  "General",
-  "Food",
-  "Travel",
-  "Bills",
-  "Shopping",
-  "Substances",
-];
+const categories = CATEGORIES;
 
 const ExpenseForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
@@ -22,7 +16,7 @@ const ExpenseForm = ({ onAdd }) => {
     if (!title.trim() || !amount || parseFloat(amount) <= 0) return;
 
     onAdd({
-      id: Date.now(),
+      id: crypto.randomUUID(),
       title: title.trim(),
       amount: parseFloat(amount),
       category,

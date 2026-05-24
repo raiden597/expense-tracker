@@ -1,14 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { CURRENCY_SYMBOLS } from "./constants";
 
 const CurrencyContext = createContext();
 
-const currencySymbols = {
-  INR: "₹",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-  JPY: "¥",
-};
+const currencySymbols = CURRENCY_SYMBOLS;
 
 export const CurrencyProvider = ({ children }) => {
   const [currency, setCurrency] = useState(() => {

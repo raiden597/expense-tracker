@@ -1,43 +1,44 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ExpenseList from "../components/ExpenseList";
 import CategoryPieChart from "../components/CategoryPieChart";
 import MonthlyBarChart from "../components/MonthlyBarChart";
 import { useCurrency } from "../CurrencyContext";
-import DailyHeatmap from "../components/DailyHeatmap"; 
+import { CURRENCY_SYMBOLS } from "../constants";
+import DailyHeatmap from "../components/DailyHeatmap";
 import StatsSummary from "../components/StatsSummary";
 
-const currencySymbols = {
-  INR: "₹", USD: "$", EUR: "€", GBP: "£", JPY: "¥",
-};
-
 const Dashboard = ({ expenses, onDelete, onEdit }) => {
-  const currentMonth = new Date().getMonth() + 1; // 1-indexed (Jan = 1)
+  const currentMonth = new Date().getMonth() + 1;
   const [month, setMonth] = useState(currentMonth.toString());
   const [sortBy, setSortBy] = useState("date");
-  const { currency, setCurrency } = useCurrency();
+  const { currency, setCurrency, symbol } = useCurrency();
 
-  const filteredExpenses = month
-    ? expenses.filter((e) => new Date(e.date).getMonth() + 1 === parseInt(month))
-    : expenses;
+  const filteredExpenses = useMemo(() => {
+    return month
+      ? expenses.filter(
+          (e) => new Date(e.date).getMonth() + 1 === parseInt(month)
+        )
+      : expenses;
+  }, [expenses, month]);
 
-  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
-    if (sortBy === "amount") return b.amount - a.amount;
-    return new Date(b.date) - new Date(a.date);
-  });
-
-  const total = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const sortedExpenses = useMemo(() => {
+    return [...filteredExpenses].sort((a, b) => {
+      if (sortBy === "amount") return b.amount - a.amount;
+      return new Date(b.date) - new Date(a.date);
+    });
+  }, [filteredExpenses, sortBy]);
 
   const downloadCSV = () => {
     const headers = ["Title", "Amount", "Category", "Date"];
-    const rows = expenses.map((e) => [
-      e.title,
+    const rows = sortedExpenses.map((e) => [
+      `"${e.title.replace(/"/g, '""')}"`,
       e.amount,
       e.category || "",
       new Date(e.date).toLocaleDateString(),
     ]);
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      [headers, ...rows].map((e) => e.join(",")).join("\n");
+      [headers, ...rows].map((r) => r.join(",")).join("\n");
     const link = document.createElement("a");
     link.href = encodeURI(csvContent);
     link.download = "expenses.csv";
@@ -47,8 +48,8 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-1 text-center">Dashboard</h1>
-      
-      <StatsSummary expenses={filteredExpenses} allExpenses={expenses}/>
+
+      <StatsSummary expenses={filteredExpenses} allExpenses={expenses} />
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6 mt-4 justify-center">
         <select
@@ -78,9 +79,9 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
           onChange={(e) => setCurrency(e.target.value)}
           className="w-full sm:w-auto border border-slate-300 p-2 rounded bg-white text-slate-700 shadow-sm"
         >
-          {Object.entries(currencySymbols).map(([code, symbol]) => (
+          {Object.entries(CURRENCY_SYMBOLS).map(([code, sym]) => (
             <option key={code} value={code}>
-              {symbol} {code}
+              {sym} {code}
             </option>
           ))}
         </select>
@@ -92,15 +93,25 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
           Export CSV
         </button>
       </div>
-       
-       
 
-      <ExpenseList
-        expenses={sortedExpenses}
-        onDelete={onDelete}
-        currency={currency}
-        onEdit={onEdit}
-      />
+      {sortedExpenses.length === 0 ? (
+        <p className="text-center text-slate-400 py-12 text-lg">
+          No expenses for{" "}
+          {month
+            ? new Date(0, parseInt(month) - 1).toLocaleString("default", {
+                month: "long",
+              })
+            : "this period"}
+          .
+        </p>
+      ) : (
+        <ExpenseList
+          expenses={sortedExpenses}
+          onDelete={onDelete}
+          currency={currency}
+          onEdit={onEdit}
+        />
+      )}
 
       {filteredExpenses.length > 0 && (
         <div className="mt-10 space-y-8">
@@ -110,18 +121,22 @@ const Dashboard = ({ expenses, onDelete, onEdit }) => {
 
           <div className="bg-white p-4 rounded-xl shadow space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Category</h3>
+              <h3 className="text-lg font-medium text-slate-700 mb-2">
+                Spending by Category
+              </h3>
               <CategoryPieChart expenses={filteredExpenses} />
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-slate-700 mb-2">Spending by Month</h3>
+              <h3 className="text-lg font-medium text-slate-700 mb-2">
+                Spending by Month
+              </h3>
               <MonthlyBarChart expenses={expenses} />
             </div>
-            <div>
-  <DailyHeatmap expenses={filteredExpenses} />
-</div>
 
+            <div>
+              <DailyHeatmap expenses={filteredExpenses} />
+            </div>
           </div>
         </div>
       )}

@@ -21,13 +21,31 @@ const App = () => {
   }, [expenses]);
 
   const addExpense = (expense) => {
-    setExpenses([expense, ...expenses]);
+    setExpenses((prev) => [expense, ...prev]);
     toast.success("Expense added!");
   };
 
   const deleteExpense = (id) => {
-    setExpenses(expenses.filter((e) => e.id !== id));
-    toast("Deleted", { icon: "🗑️" });
+    const deleted = expenses.find((e) => e.id === id);
+    setExpenses((prev) => prev.filter((e) => e.id !== id));
+
+    toast(
+      (t) => (
+        <span className="flex items-center gap-2">
+          Deleted &ldquo;{deleted.title}&rdquo;
+          <button
+            onClick={() => {
+              setExpenses((prev) => [deleted, ...prev]);
+              toast.dismiss(t.id);
+            }}
+            className="underline text-blue-600 font-medium"
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { icon: "🗑️", duration: 5000 }
+    );
   };
 
   const saveEditedExpense = (updatedExpense) => {
@@ -35,7 +53,7 @@ const App = () => {
       prev.map((e) => (e.id === updatedExpense.id ? updatedExpense : e))
     );
     toast.success("Expense updated!");
-    setEditingExpense(null); // close modal
+    setEditingExpense(null);
   };
 
   return (
@@ -62,7 +80,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* Edit modal */}
         {editingExpense && (
           <EditExpenseModal
             expense={editingExpense}

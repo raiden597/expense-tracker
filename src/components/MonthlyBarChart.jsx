@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { useCurrency } from "../CurrencyContext";
 import { categoryColors, defaultColors } from "../assets/categoryColors";
+import { CURRENCY_LOCALES } from "../constants";
 
 
 const MonthlyBarChart = ({ expenses }) => {
@@ -19,7 +20,7 @@ const MonthlyBarChart = ({ expenses }) => {
   const [view, setView] = useState("stacked");
   const [highlight, setHighlight] = useState("All");
 
-  const formatter = new Intl.NumberFormat("en-IN", {
+  const formatter = new Intl.NumberFormat(CURRENCY_LOCALES[currency] || "en-US", {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
